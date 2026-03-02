@@ -40,6 +40,7 @@ The solution was built to satisfy the following technical and operational requir
 ## 🏗️ Architecture
 
 ### High-Level Flow
+![High Level Architecture](docs/data-architecture.png)
 
 
 ### Architecture as Code – Mermaid
