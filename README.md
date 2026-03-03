@@ -1,11 +1,11 @@
 # Superstore Sales Lakehouse  
+![Architecture](https://img.shields.io/badge/Architecture-Medallion-success)
 ![Azure](https://img.shields.io/badge/Platform-Microsoft%20Azure-blue)
-![ADF](https://img.shields.io/badge/Orchestration-Azure%20Data%20Factory-purple)
+![ADF](https://img.shields.io/badge/Ingestion-Azure%20Data%20Factory-purple)
 ![Databricks](https://img.shields.io/badge/Processing-Azure%20Databricks-red)
 ![ADLS](https://img.shields.io/badge/Storage-ADLS%20Gen2-orange)
 ![Format](https://img.shields.io/badge/Format-Delta-success)
 ![IaC](https://img.shields.io/badge/IaC-Bicep-blueviolet)
-![Architecture](https://img.shields.io/badge/Architecture-Lakehouse-success)
 
 ---
 
