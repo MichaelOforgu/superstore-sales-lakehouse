@@ -1,4 +1,4 @@
-# Superstore Sales Lakehouse  
+# Superstore Sales Lakehouse Pipeline
 ![Architecture](https://img.shields.io/badge/Architecture-Medallion-success)
 ![Azure](https://img.shields.io/badge/Platform-Microsoft%20Azure-blue)
 ![ADF](https://img.shields.io/badge/Ingestion-Azure%20Data%20Factory-purple)
