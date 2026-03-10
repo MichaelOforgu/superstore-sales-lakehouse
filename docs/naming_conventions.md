@@ -133,23 +133,6 @@ Surrogate keys are used only in the Gold layer.
 
 ---
 
-### **Technical Columns**
-
-- All system-generated metadata columns must begin with the prefix `dwh_`.
-
-Pattern: dwh_<column_name\>
-
-
-Examples:
-- `dwh_load_date`
-- `dwh_insert_ts`
-- `dwh_update_ts`
-- `dwh_source_system`
-
-These columns are used for auditability and data lineage.
-
----
-
 ## **Pipeline & Job Naming Conventions**
 
 ### **ADF Pipelines**
@@ -187,5 +170,4 @@ Examples:
 - Gold models data for analytics.
 - Business keys use `_id`.
 - Surrogate keys use `_key`.
-- Technical metadata uses `dwh_` prefix.
 - All naming must remain consistent, predictable, and environment-independent.
