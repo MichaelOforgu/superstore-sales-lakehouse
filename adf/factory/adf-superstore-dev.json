@@ -1,0 +1,9 @@
+{
+	"name": "adf-superstore-dev",
+	"location": "uksouth",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "d589aaa6-655d-4aee-a10e-09cea9d0d228",
+		"tenantId": "22375461-03ae-40f7-b2a8-38b97f5994e8"
+	}
+}

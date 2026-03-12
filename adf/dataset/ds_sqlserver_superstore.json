@@ -1,0 +1,13 @@
+{
+	"name": "ds_sqlserver_superstore",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_sql_server_onprem",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
