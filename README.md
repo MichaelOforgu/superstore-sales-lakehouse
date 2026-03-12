@@ -1,150 +1,362 @@
 # Superstore Sales Lakehouse Pipeline
+
 ![Architecture](https://img.shields.io/badge/Architecture-Medallion-success)
 ![Azure](https://img.shields.io/badge/Platform-Microsoft%20Azure-blue)
 ![ADF](https://img.shields.io/badge/Ingestion-Azure%20Data%20Factory-purple)
 ![Databricks](https://img.shields.io/badge/Processing-Azure%20Databricks-red)
 ![ADLS](https://img.shields.io/badge/Storage-ADLS%20Gen2-orange)
 ![Format](https://img.shields.io/badge/Format-Delta-success)
-![IaC](https://img.shields.io/badge/IaC-Bicep-blueviolet)
+
+---
+
+## 📑 Table of Contents
+
+- Project Overview
+- Business Impact
+- Solution Architecture
+- End-to-End Pipeline Flow
+- Azure Data Factory Ingestion
+- Databricks Job Orchestration
+- Lakehouse Implementation
+- Performance Optimizations
+- Security & Governance
+- Architecture Decisions
+- Technology Stack
+- Repository Structure
+- License
 
 ---
 
 ## 📖 Project Overview
 
-Architected and implemented an Azure-based Lakehouse platform to ingest, transform, and model Superstore sales data from an on-prem SQL Server system into an analytics-ready star schema.
+This project demonstrates the design and implementation of a **modern Azure Lakehouse data platform** that ingests retail sales data from an **on-premises SQL Server** system and transforms it into an **analytics-ready dimensional model**.
 
-The solution modernizes manual reporting processes by introducing automated incremental pipelines, dimensional modeling, and governed cloud storage aligned with the Medallion Architecture (Bronze → Silver → Gold).
+The platform implements the **Medallion Architecture (Bronze → Silver → Gold)** using:
 
-**Impact Delivered:**
-- ~80% reduction in manual ETL work  
-- Improved BI dashboard performance by ~40%  
-- ≥99% pipeline execution reliability  
-- Daily refreshed data available before 08:00 AM UTC  
-
----
-
-## 🚀 Project Requirements
-
-The solution was built to satisfy the following technical and operational requirements:
-
-- Incremental ingestion from on-prem SQL Server  
-- No direct load on transactional systems  
-- <2-hour end-to-end processing SLA  
-- Analytics-ready star schema for BI tools  
-- Secure access through RBAC  
-- Reproducible deployment via Bicep templates  
-- Maintain historical context using SCD Type 2  
+- Azure Data Factory for ingestion  
+- Azure Databricks for distributed transformations  
+- Azure Data Lake Storage Gen2 for scalable storage  
+- Delta Lake for optimized analytics workloads  
 
 ---
 
-## 🏗️ Architecture
+## 🎯 Business Impact
 
-### High-Level Flow
+| Metric | Improvement |
+|------|------|
+| Manual ETL effort | ↓ ~80% |
+| BI dashboard performance | ↑ ~40% |
+| Pipeline reliability | ≥99% |
+| Data availability | Daily refresh before **08:00 UTC** |
+
+---
+
+## 🧭 Solution Architecture
 ![High Level Architecture](docs/data-architecture.png)
 
 
-### Design Highlights
+## 🔁 End-to-End Pipeline Flow
 
-- Separation of compute (Databricks) and storage (ADLS)  
-- Incremental watermark-based ingestion  
-- Medallion architecture for structured data processing  
-- Star schema for optimized BI consumption  
-- Infrastructure as Code using Bicep  
+```
+On-Prem SQL Server
+        │
+        ▼
+Azure Data Factory
+(Ingestion + Incremental Loads)
+        │
+        ▼
+ADLS Gen2 Landing (Bronze)
+        │
+        ▼
+Databricks Transformations
+Bronze → Silver → Gold
+        │
+        ▼
+Delta Lake Tables
+        │
+        ▼
+Analytics Views
+        │
+        ▼
+Power BI Dashboards
+```
+
+---
+
+## 📥 Azure Data Factory Ingestion
+
+Data ingestion from the on-premises SQL Server system is implemented using **Azure Data Factory (ADF)** pipelines.
+
+ADF connects securely through a **Self-Hosted Integration Runtime (SHIR)** and loads data into **ADLS Gen2 landing storage**.
+
+### Key Features
+
+- Incremental ingestion using watermark logic  
+- Secure on-prem connectivity via SHIR  
+- Parameterized pipelines for reusable ingestion  
+- Automated scheduled pipeline execution  
+
+### Pipeline Snapshot
+
+![ADF Pipeline](docs/adf-pipeline.png)
+
+*Add a screenshot of the ADF ingestion pipeline here.*
+
+---
+
+## 🔄 Databricks Job Orchestration
+
+Data transformations are orchestrated using **Databricks Workflows**, which execute notebooks sequentially across the Medallion architecture layers.
+
+```
+Bronze Ingestion → Silver Transformations → Gold Modeling → Analytics Views
+```
+
+Each stage runs as a **task in a multi-task Databricks job**, enabling dependency management, monitoring, and reliable execution.
+
+### Workflow Snapshot
+
+![Databricks Workflow](docs/databricks-workflow.png)
+
+*Add a screenshot of the Databricks job workflow here.*
 
 ---
 
 ## 🧱 Lakehouse Implementation
 
-### 🥉 Bronze Layer – Raw Ingestion
-- Parameterized ADF pipelines  
-- Self-Hosted Integration Runtime for secure connectivity  
-- Watermark-based incremental loading  
-- Delta/Parquet storage partitioned by ingestion date  
+### 🥉 Bronze Layer – Raw Data
 
-### 🥈 Silver Layer – Standardized Data
-- PySpark cleansing and validation  
-- Data type harmonization  
-- Deduplication and schema enforcement  
-- Idempotent transformation logic  
+Purpose: ingest raw datasets with minimal transformation.
+
+Notebook:
+
+```
+bronze/bronze_ingestion.ipynb
+```
+
+Responsibilities:
+
+- Raw data ingestion  
+- Metadata tracking  
+- Schema preservation  
+- Delta/Parquet storage  
+
+---
+
+### 🥈 Silver Layer – Cleaned Data
+
+Purpose: standardize and validate raw datasets.
+
+Transformations include:
+
+- schema enforcement  
+- data type harmonization  
+- duplicate removal  
+- null validation  
+
+Notebooks:
+
+```
+silver/silver_branches.ipynb
+silver/silver_categories.ipynb
+silver/silver_customers.ipynb
+silver/silver_orders.ipynb
+silver/silver_order_details.ipynb
+```
+
+---
 
 ### 🥇 Gold Layer – Analytics Model
-- Kimball-style star schema  
-- Surrogate key generation  
-- SCD Type 2 implementation for historical tracking (e.g., Customer)  
-- Date-based partitioning of fact tables for performance  
+
+The Gold layer provides an **analytics-ready star schema** optimized for BI tools.
+
+Dimension tables:
+
+```
+dim_customers
+dim_categories
+dim_branches
+```
+
+Fact tables:
+
+```
+fact_orders
+fact_order_details
+```
+
+Key features:
+
+- surrogate key generation  
+- SCD Type 2 history tracking  
+- partitioned fact tables  
 
 ---
 
-## 🧪 Data Quality Controls
+## ⚡ Performance Optimizations
 
-To ensure reliability and consistency:
+### Bronze Layer
 
-- Schema validation during Silver transformations  
-- Null and duplicate checks on key business fields  
-- Row count reconciliation between source → Bronze  
-- Audit fields (batch_id, ingestion_timestamp) added for traceability  
+- Auto-compaction to merge small ingestion files  
+- Delta **OPTIMIZE** operations  
+- Reshuffle during ingestion to balance partitions  
+
+### Gold Layer
+
+- **OPTIMIZE** for file compaction  
+- **Z-ORDER indexing** to improve query performance  
+
+Example:
+
+```sql
+OPTIMIZE gold.fact_orders
+ZORDER BY (order_date, customer_id);
+```
 
 ---
 
-## 🔎 Key Trade-offs & Decisions
+## 🔐 Security & Governance
 
-- **Incremental vs Full Loads**  
-  Chose incremental ingestion to reduce load time and avoid excessive compute usage.
+Security practices implemented:
 
-- **Partition Strategy**  
-  Daily partitioning selected to improve BI filtering performance without creating excessive small files.
+- Azure RBAC for role-based access control  
+- Azure Key Vault for secret management  
+- Encryption at rest and in transit  
+- Separation of compute and storage  
+- Pipeline monitoring via ADF logs  
 
-- **Delta vs Raw Parquet**  
-  Delta adopted in Silver/Gold for ACID compliance and schema enforcement.
+---
 
-- **SCD Type 2**  
-  Used for dimensions where historical accuracy is required (e.g., customer attributes).
+## 🧠 Architecture Decisions
 
-These decisions balanced complexity, performance, and maintainability.
+### Incremental Ingestion
+
+Watermark-based incremental ingestion was chosen to:
+
+- reduce load on the source system  
+- minimize compute and transfer costs  
+- speed up pipeline execution  
+
+---
+
+### Medallion Architecture
+
+Bronze → Silver → Gold structure was implemented to:
+
+- separate raw, cleaned, and analytical data  
+- improve data lineage and debugging  
+- support scalable transformations  
+
+---
+
+### Delta Lake Format
+
+Delta Lake was selected for Silver and Gold layers due to:
+
+- ACID transaction support  
+- schema enforcement  
+- improved analytical performance  
+
+---
+
+### Star Schema Modeling
+
+Kimball-style star schema was implemented to:
+
+- optimize BI performance  
+- simplify analytical queries  
+- improve data model clarity  
+
+---
+
+### Compute & Storage Separation
+
+ADLS handles storage while Databricks handles compute.
+
+Benefits:
+
+- independent scaling  
+- cost efficiency  
+- improved architecture flexibility  
 
 ---
 
 ## ⚙️ Technology Stack
 
 | Layer | Technology |
-|--------|------------|
+|------|------------|
 | Ingestion | Azure Data Factory |
 | Connectivity | Self-Hosted Integration Runtime |
-| Storage | ADLS Gen2 (Delta/Parquet) |
-| Processing | Azure Databricks (PySpark / Spark) |
-| Modeling | Star Schema + SCD Type 2 |
-| Infrastructure | Bicep (IaC) |
+| Storage | ADLS Gen2 |
+| Processing | Azure Databricks |
+| Data Format | Delta Lake |
+| Modeling | Star Schema |
 | Reporting | Power BI |
 
 ---
 
-## ⚡ Performance & Governance
-
-- Columnar Delta storage with partition pruning  
-- Optimized Spark joins to reduce shuffle  
-- Auto-scaling Databricks clusters  
-- RBAC for access control  
-- Encrypted storage (at rest + in transit)  
-- Monitoring via ADF run logs and Databricks job history  
-
----
-
-## 📂 Repository Structure
+### 📂 Repository Structure
 
 ```
-superstore-sales-lakehouse/
-├── bicep/
-├── adf/
-├── databricks/
-│   ├── bronze/
-│   ├── silver/
-│   └── gold/
+superstore-end-to-end-lakehouse-pipeline
+├── adf
+│   ├── dataset
+│   │   ├── ds_parquet_adls_landing.json
+│   │   └── ds_sqlserver_superstore.json
+│   ├── factory
+│   │   └── adf-superstore-dev.json
+│   ├── integrationRuntime
+│   │   └── SHIR.json
+│   ├── linkedService
+│   │   ├── ls_key_vault.json
+│   │   ├── ls_parquet_adls_landing.json
+│   │   └── ls_sql_server_onprem.json
+│   ├── pipeline
+│   │   └── pl_onprem_sqldb_to_adls.json
+│   └── publish_config.json
+│
+├── databricks
+│   ├── bronze
+│   │   └── bronze_ingestion.ipynb
+│   ├── silver
+│   │   ├── silver_branches.ipynb
+│   │   ├── silver_categories.ipynb
+│   │   ├── silver_customers.ipynb
+│   │   ├── silver_order_details.ipynb
+│   │   └── silver_orders.ipynb
+│   ├── gold
+│   │   ├── gold_dim_branches.ipynb
+│   │   ├── gold_dim_categories.ipynb
+│   │   ├── gold_dim_customers.ipynb
+│   │   ├── gold_fact_order_details.ipynb
+│   │   └── gold_fact_orders.ipynb
+│   ├── views
+│   │   ├── v_branch_sales.ipynb
+│   │   ├── v_customer_value.ipynb
+│   │   ├── v_daily_sales.ipynb
+│   │   ├── v_product_performance.ipynb
+│   │   └── v_sales.ipynb
+│   ├── jobs
+│   │   ├── optimize_gold_tables.json
+│   │   └── superstore_etl_pipeline.json
+│   ├── optimize_gold_tables.ipynb
+│   ├── config.ipynb
+│   └── init_lakehouse.ipynb
+│
+├── docs
+│   ├── architecture_overview.md
+│   ├── data-architecture.png
+│   ├── executive_summary.md
+│   ├── naming_conventions.md
+│   └── project_requirements.md
+│
+├── LICENSE
 └── README.md
 ```
 
 ---
 
-## 🎯 Strategic Outcome
+### 🎯 Strategic Outcome
 
 Delivered a scalable, maintainable Azure data platform that:
 
@@ -155,6 +367,6 @@ Delivered a scalable, maintainable Azure data platform that:
 
 ---
 
-## 🛡️ License
+### 🛡️ License
 
 This project is licensed under the [MIT License](LICENSE). You are free to use, modify, and share this project with proper attribution.
