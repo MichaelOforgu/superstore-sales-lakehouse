@@ -1,0 +1,26 @@
+{
+  "name": "optimize_gold_tables",
+  "email_notifications": {
+    "no_alert_for_skipped_runs": false
+  },
+  "webhook_notifications": {},
+  "timeout_seconds": 0,
+  "max_concurrent_runs": 1,
+  "tasks": [
+    {
+      "task_key": "optimize_gold_tables",
+      "run_if": "ALL_SUCCESS",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/chukwuka.oforgu_gmail.com#ext#@chukwukaoforgugmail.onmicrosoft.com/superstore-end-to-end-lakehouse-pipeline/databricks/optimize_gold_tables",
+        "source": "WORKSPACE"
+      },
+      "existing_cluster_id": "0309-122145-5on82oj2",
+      "timeout_seconds": 0,
+      "email_notifications": {}
+    }
+  ],
+  "queue": {
+    "enabled": true
+  },
+  "performance_target": "PERFORMANCE_OPTIMIZED"
+}
