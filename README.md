@@ -54,11 +54,10 @@ The source system is an **on-premises SQL Server database** containing transacti
 | Customers & Addresses | 99,998 |
 | Orders | 10,235,193 |
 | Order Details | 51,185,032 |
-| Sold Products | 230,323,422 |
 
-This dataset represents a **large-scale retail transactional workload with over 230 million product-level sales records**, making it suitable for demonstrating enterprise-grade data engineering patterns including incremental ingestion, distributed transformations, dimensional modelling, and optimized analytical storage.
+This dataset represents a **large-scale retail transactional workload with over 51 million product-level sales records**, making it suitable for demonstrating enterprise-grade data engineering patterns including incremental ingestion, distributed transformations, dimensional modelling, and optimized analytical storage.
 
-The platform processes **230M+ sales transactions generated from 10M orders across 161 retail branches**, showcasing scalable ingestion and transformation using **Azure Data Factory and Azure Databricks** within a modern Lakehouse architecture.
+The platform processes **51+ sales transactions generated from 10M orders across 161 retail branches**, showcasing scalable ingestion and transformation using **Azure Data Factory and Azure Databricks** within a modern Lakehouse architecture.
 
 ---
 
