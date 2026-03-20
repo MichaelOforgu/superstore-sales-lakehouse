@@ -119,7 +119,7 @@ ADF connects securely through a **Self-Hosted Integration Runtime (SHIR)** and l
 
 ### Pipeline Snapshot
 
-![ADF Pipeline](docs/adf-pipeline.png)
+![ADF Pipeline](docs/screenshots/adf-pipeline.png)
 
 ---
 
@@ -135,7 +135,7 @@ Each stage runs as a **task in a multi-task Databricks job**, enabling dependenc
 
 ### Workflow Snapshot
 
-![Databricks Workflow](docs/databricks-workflow.png)
+![Databricks Workflow](docs/screenshots/databricks-workflow.png)
 
 ---
 
